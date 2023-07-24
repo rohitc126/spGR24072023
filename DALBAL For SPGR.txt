@@ -1,0 +1,184 @@
+      select 
+
+
+
+
+CREATE PROC [AGG].[USP_SELECT_SPECIFIC_GRAVITY]
+@FROM_DT					DATETIME,
+@TO_DT						DATETIME 
+
+AS BEGIN
+
+SELECT A.Test_ID, A.Test_No, A.Date,A.Source,A.Type,A.Colour,A.Texture,A.Shape,A.Rock_Type,
+CASE WHEN ISNULL(D.Test_ID,0) = 0 THEN 'Pending' ELSE 'Done' END Status, D.Test_Dtl_ID
+ 
+FROM [AGG].[Tbl_SPECIFIC_GRAVITY_HDR] AS A WITH(NOLOCK) 
+LEFT OUTER JOIN [AGG].[Tbl_SPECIFIC_GRAVITY_Dtl] as D ON D.Test_ID = a.Test_ID
+WHERE  A.Date  BETWEEN  @FROM_DT  AND @TO_DT
+END 
+
+
+
+GO
+
+
+
+         Insert HDR
+
+
+CREATE PROC [AGG].[USP_INSERT_SPECIFIC_GRAVITY_HDR]
+@ERRORSTR					VARCHAR(200) OUTPUT,
+@Test_ID					NUMERIC(18, 0) OUTPUT,
+@Test_No				    VARCHAR(20) OUTPUT,
+@Date				        DATETIME, 
+@Source					    VARCHAR(50),
+@Type				        VARCHAR(50), 
+@Colour				        VARCHAR(20), 
+@Texture					VARCHAR(20),
+@Shape			         	VARCHAR(20),
+@Rock_Type					VARCHAR(20),
+@Tested_By                   CHAR(7),
+@Qc_Incharge                CHAR(7),
+@Remarks                    VARCHAR(200),
+@Added_By                   CHAR(7)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SET @ERRORSTR='' 
+  DECLARE @IDTEMP INT      
+SELECT @IDTEMP = MAX(CAST(left(RIGHT(Test_No,7),7) AS INT) ) FROM [AGG].[Tbl_SPECIFIC_GRAVITY_HDR]
+SELECT @IDTEMP=CASE WHEN @IDTEMP IS NULL THEN 1  ELSE @IDTEMP + 1  END      
+
+SELECT @Test_No = 'TEST' +Replicate('0',7 - len(@IDTEMP)) + cast(@IDTEMP as varchar) 
+
+	INSERT INTO [AGG].[Tbl_SPECIFIC_GRAVITY_HDR]
+			   ([Test_No]
+			   ,[Date]
+			   ,[Source]
+			   ,[Type]		
+			   ,[Colour]
+			   ,[Texture]	
+			   ,[Shape]
+			   ,[Rock_Type]		
+			   ,[Tested_By] 
+			   ,[Qc_Incharge]
+			   ,[Remarks]
+			   ,[Added_By]  
+			   ,[Added_On] 
+			   )
+		 VALUES
+			   (@Test_No,
+			    @Date,
+			    @Source	,				  
+				@Type	,			        
+				@Colour,				        
+				@Texture,					
+				@Shape	,		         	
+				@Rock_Type	,				
+				@Tested_By  ,               
+				@Qc_Incharge , 
+				@Remarks,                             
+				@Added_By  ,
+				GETDATE()
+				  )
+
+	SET @Test_ID = (SELECT SCOPE_IDENTITY())         
+
+		IF @@ERROR <> 0
+		BEGIN
+			SET @ERRORSTR = 'DATA BASE ERROR OCCUR FOR TABLE SPECIFIC GRAVITY HDR !'
+			SET @Test_ID = -1		
+			RETURN
+		END
+ 
+END
+
+
+GO
+
+
+
+
+
+                              Insert_EDit
+
+CREATE PROC [AGG].[USP_INSERT_SPECIFIC_GRAVITY_EDIT]
+@Test_ID           NUMERIC(18,0) OUTPUT
+
+
+AS BEGIN
+
+SELECT A.Test_ID,A.Test_No, Date,A.Source,A.Type,A.Colour,A.Texture,A.Shape,A.Rock_Type, 
+emp1.Employee_Name AS Tested_By ,emp2.Employee_Name AS Qc_Incharge,emp3.Employee_Name AS Added_By,D.Dry_Agg_Wt,D.Oven_Dry_Agg_Wt,D.Sample_Wt,D.Wb_Agg_Wt,D.Wb_Wt
+
+FROM [AGG].[Tbl_SPECIFIC_GRAVITY_HDR] AS A WITH(NOLOCK) 
+
+INNER JOIN [HRM].[dbo].[vw_Employee_Mst] AS emp1 WITH(NOLOCK) on emp1.Employee_Code = A.Tested_By
+INNER JOIN [HRM].[dbo].[vw_Employee_Mst] AS emp2 WITH(NOLOCK) on emp2.Employee_Code = A.Qc_Incharge
+INNER JOIN [HRM].[dbo].[vw_Employee_Mst] AS emp3 WITH(NOLOCK) on emp3.Employee_Code = A.Added_By
+INNER JOIN [AGG].[Tbl_SPECIFIC_GRAVITY_Dtl] as D ON D.Test_Dtl_ID =A.Test_ID
+
+
+  WHERE  D.Test_Dtl_ID =@Test_ID
+
+END 
+
+
+GO
+
+
+
+
+
+                              Insert_Dtl
+
+
+CREATE PROC [AGG].[USP_INSERT_SPECIFIC_GRAVITY_Dtl]
+@ERRORSTR					VARCHAR(200) OUTPUT,
+@Test_Dtl_ID			    NUMERIC(18, 0) OUTPUT, 
+@Test_ID				    NUMERIC(18, 0),
+----@Determination		    	VARCHAR(50),
+@Sample_Wt				    NUMERIC(18,2),
+@Wb_Agg_Wt					NUMERIC(18,2),
+@Wb_Wt                      NUMERIC(18,2),
+@Dry_Agg_Wt					NUMERIC(18,2),
+@Oven_Dry_Agg_Wt			NUMERIC(18,2)
+
+
+AS BEGIN
+
+SET NOCOUNT ON;
+SET @ERRORSTR='' 
+INSERT INTO [AGG].[Tbl_SPECIFIC_GRAVITY_Dtl]
+           ([Test_ID]
+		   --,[Determination]
+           ,[Sample_Wt]
+           ,[Wb_Agg_Wt]
+		   ,[Wb_Wt]
+           ,[Dry_Agg_Wt]
+           ,[Oven_Dry_Agg_Wt]
+           )
+     VALUES
+           (
+		   @Test_ID	,	
+		   ---@Determination,	
+		   @Sample_Wt	,	
+		   @Wb_Agg_Wt	,	
+		   @Wb_Wt,
+		   @Dry_Agg_Wt	,	
+		   @Oven_Dry_Agg_Wt
+		   )
+
+
+ SET @Test_Dtl_ID = (SELECT SCOPE_IDENTITY())         
+
+		IF @@ERROR <> 0
+		BEGIN
+			SET @ERRORSTR = 'DATA BASE ERROR OCCUR FOR TABLE SPECIFIC GRAVITY DTL !'
+			SET @Test_Dtl_ID = -1		
+			RETURN
+		END
+ 
+END
+
+GO

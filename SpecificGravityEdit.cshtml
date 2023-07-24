@@ -1,0 +1,409 @@
+﻿@model BusinessLayer.Entity.SpGRavitySample2cs
+
+@{
+    ViewBag.Title = "SpecificGravityEdit";
+    Layout = "~/Views/Shared/_MainDashboard.cshtml";
+}
+
+<style>
+    .table thead th {
+        font-weight: 600;
+        font-size: 15px;
+        border-bottom: 0;
+        padding-left: 1rem;
+    }
+
+    .table td {
+        font-weight: 600;
+        font-size: 11px;
+        border-bottom: 0;
+        padding-left: 1rem;
+    }
+
+    .table td, .table th {
+        padding: 0.25rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .table td, .table th {
+        padding: 0.25rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .table .form-control {
+        height: 45px;
+    }
+
+    .box {
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+        /*box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;*/
+    }
+
+    .thHeader {
+        -webkit-box-shadow: 2px -3px 5px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 2px -3px 5px 0px rgba(0,0,0,0.75);
+        box-shadow: 2px -3px 5px 0px rgba(0,0,0,0.75);
+        width: 30%;
+        border-radius: 10px;
+        background-color: #caf8fa;
+    }
+</style>
+
+<link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
+
+
+
+@using (Html.BeginForm("SpecificGravityEdit", "Specific", FormMethod.Post, new { @id = "frmSpecificGravityEdit" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    Html.RenderPartial("_Alerts");
+
+    <div class="pd-20 card-box mb-30">
+        <div class="form-group row">
+            <label class="col-sm-12 col-md-2 bold">Test No</label>
+            <div class="col-sm-12 col-md-4">
+                :  <span id="spnTest_No" style="color: red;font-weight:bold;">@Model.Test_No</span>
+            </div>
+            </div>
+            <label class="col-sm-12 col-md-2 col-form-label required">Date</label>
+            <div class="col-sm-12 col-md-4">
+                @Html.TextBoxFor(x => x.Date, new { @class = "form-control datetimepicker", @id = "txtDate", @autocomplete = "off", @data_placeholder = "Select Date", @readOnly = true })
+                <span id="spnErr_txtDate" class="field-validation-error"></span>
+            </div>
+       
+        <div class="form-group row">
+            <label class="col-sm-12 col-md-2 col-form-label required">Source</label>
+            <div class="col-sm-12 col-md-4">
+                @Html.TextBoxFor(x => x.Source, new { @class = "form-control", @id = "txtSource", @autocomplete = "off", @maxlength = "75", @style = "text-transform:upperCase;", @placeholder = "Auto Extender Source/Name", @data_placeholder = "Enter Source" })
+                <span id="spnErr_txtSource" class="field-validation-error"></span>
+            </div>
+            <label class="col-sm-12 col-md-2 col-form-label required">Type</label>
+            <div class="col-sm-12 col-md-4">
+                @Html.TextBoxFor(x => x.Type, new { @class = "form-control", @id = "txtType", @autocomplete = "off", @data_placeholder = "Enter Type" })
+                <span id="spnErr_txtType" class="field-validation-error"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-12 col-md-2 col-form-label required">Colour</label>
+            <div class="col-sm-12 col-md-4">
+                @Html.TextBoxFor(x => x.Colour, new { @class = "form-control", @id = "txtColour", @autocomplete = "off", @data_placeholder = "Enter Colour" })
+                <span id="spnErr_txtColour" class="field-validation-error"></span>
+            </div>
+            <label class="col-sm-12 col-md-2 col-form-label required">Texture</label>
+            <div class="col-sm-12 col-md-4">
+                @Html.TextBoxFor(x => x.Texture, new { @class = "form-control", @id = "txtTexture", @autocomplete = "off", @data_placeholder = "Enter Texture" })
+                <span id="spnErr_txtTexture" class="field-validation-error"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-12 col-md-2 col-form-label required">Shape</label>
+            <div class="col-sm-12 col-md-4">
+                @Html.TextBoxFor(x => x.Shape, new { @class = "form-control", @id = "txtShape", @autocomplete = "off", @maxlength = "75", @data_placeholder = "Enter Shape" })
+                <span id="spnErr_txtShape" class="field-validation-error"></span>
+            </div>
+            <label class="col-sm-12 col-md-2 col-form-label required">Rock Type</label>
+            <div class="col-sm-12 col-md-4">
+                @Html.TextBoxFor(x => x.Rock_Type, new { @class = "form-control", @id = "txtRock_Type", @autocomplete = "off", @data_placeholder = "Enter Rock Type" })
+                <span id="spnErr_txtRock_Type" class="field-validation-error"></span>
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <div class="table-responsive">
+                <table class="table table-bordered" style="font-size: 10px; padding: 0px; margin: 0px;width:100% " id="tblList">
+
+                    <thead>
+                        <tr>
+                            <th style="width: 5px;text-align: center;">SR No:</th>
+                            <th style="width: 414px;text-align: center;">Determination</th>
+                            <th style="width: 120px;text-align: center;">Formula</th>
+                            <th style="width: 150px; text-align: center;">Sample I</th>
+                            <th style="width: 150px; text-align: center;" data-validation="required">Sample II</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody id="tbodyList">
+
+                        <tr>
+
+                            <td data-title="SR No:">
+                                @for (int i = 0; i < 9; i++)
+                                {
+
+                                    <span id="spnSrNo_@i" class="form-control" style="padding:0px"> @(i + 1) </span>
+                                }
+                            </td>
+                            <td data-title="Determination">
+
+                                @Html.TextBoxFor(x => x.Determination,     new { @class = "form-control", @placeholder = "wt.of sample as received /taken for test after washing , gms",@readonly = true })
+                                @Html.TextBoxFor(x => x.txtDetermination1, new { @class = "form-control", @placeholder = "wt.of wire basket + Aggregate in water", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtDetermination2, new { @class = "form-control", @placeholder = "wt.of wire basket in water", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtDetermination3, new { @class = "form-control", @placeholder = "wt.of saturated aggregate in water(A)", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtDetermination4, new { @class = "form-control", @placeholder = "wt.of saturated Surface dry aggregate in Air(B)", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtDetermination5, new { @class = "form-control", @placeholder = "wt.of oven-dried aggregate in Air", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtDetermination6, new { @class = "form-control", @placeholder = "Specific Gravity", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtDetermination7, new { @class = "form-control", @placeholder = "Apparent Specific Gravity", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtDetermination8, new { @class = "form-control", @placeholder = "Water Abosrption in %", @readonly = true })
+                            </td>
+                            <td data-title="Formula">
+                                @Html.TextBoxFor(x => x.txtFormula, new { @class = "form-control numeric", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtFormula1, new { @class = "form-control numeric", @placeholder = "A1", value = "", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtFormula2, new { @class = "form-control numeric", @placeholder = "A2", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtFormula3, new { @class = "form-control numeric", @placeholder = "A1-A2", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtFormula4, new { @class = "form-control numeric", @placeholder = "B", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtFormula5, new { @class = "form-control numeric", @placeholder = "C", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtFormula6, new { @class = "form-control numeric", @placeholder = "C/(B-A)", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtFormula7, new { @class = "form-control numeric", @placeholder = "C(C-A)", @readonly = true })
+                                @Html.TextBoxFor(x => x.txtFormula8, new { @class = "form-control numeric", @placeholder = "(B-C)*100/C", @readonly = true })
+                            </td>
+                            <td data-title="Sample I">
+                                @Html.TextBoxFor(x => x.Sample_Wt, new { @class = "form-control numeric", @id = "txtSample", @autocomplete = "off", @data_placeholder = "Enter Sample Wt" })
+                                @Html.TextBoxFor(x => x.Wb_Agg_Wt, new { @class = "form-control numeric", @id = "txtSample1", @autocomplete = "off", @data_placeholder = "Enter Wire Basket + Agg Wt" })
+                                @Html.TextBoxFor(x => x.Wb_Wt, new { @class = "form-control numeric", @id = "txtSample2", @autocomplete = "off", @data_placeholder = "Enter Wire Basket Wt" })
+                                @Html.TextBoxFor(x => x.SA_WT, new { @class = "form-control numeric", @id = "txtSample3", @autocomplete = "off", @data_placeholder = "Enter Saturated Agg WT" })
+                                @Html.TextBoxFor(x => x.Dry_Agg_Wt, new { @class = "form-control numeric", @id = "txtSample4", @autocomplete = "off", @data_placeholder = "Enter Dry Agg Wt" })
+                                @Html.TextBoxFor(x => x.Oven_Dry_Agg_Wt, new { @class = "form-control numeric", @id = "txtSample5", @autocomplete = "off", @data_placeholder = "Enter Oven Dry Agg Wt" })
+                                @Html.TextBoxFor(x => x.SP_SG, new { @class = "form-control numeric", @id = "txtSample6", @autocomplete = "off", @ReadOnly = "True", @data_placeholder = "Enter Specific Gravity" })
+                                @Html.TextBoxFor(x => x.APP_SG, new { @class = "form-control numeric", @id = "txtSample7", @autocomplete = "off", @ReadOnly = "True", @data_placeholder = "Enter Apparent Specific Gravity" })
+                                @Html.TextBoxFor(x => x.WA_AB, new { @class = "form-control numeric", @id = "txtSample8", @autocomplete = "off", @ReadOnly = "True", @data_placeholder = "Enter Water Absorption in %" })
+                              
+                            </td>
+                            <td data-title="Sample II">
+                                @Html.TextBoxFor(x => x.Sample_Wt1, new { @class = "form-control numeric", @id = "txtSamp", @autocomplete = "off", required = "required", @data_placeholder = "Enter Sample Wt." })
+                                @*<span id="spnErr_txtSamp" class="field-validation-error"></span>*@
+
+                                @Html.TextBoxFor(x => x.Wb_Agg_Wt1, new { @class = "form-control numeric", @id = "txtSamp1", @autocomplete = "off", required = "required", @data_placeholder = "Enter Wt. of Wire Basket + Aggregate in water" })
+                                @*<span id="spnErr_txtSamp1" class="field-validation-error"></span>*@
+                                @Html.TextBoxFor(x => x.Wb_Wt1, new { @class = "form-control numeric", @id = "txtSamp2", @autocomplete = "off", required = "required", @data_placeholder = "Enter Wt. of Wire Basket in water" })
+                                @*<span id="spnErr_txtSamp2" class="field-validation-error"></span>*@
+                                @Html.TextBoxFor(x => x.SA_WT1, new { @class = "form-control numeric", @id = "txtSamp3", @autocomplete = "off" })
+                                @Html.TextBoxFor(x => x.Dry_Agg_Wt1, new { @class = "form-control numeric", @id = "txtSamp4", @autocomplete = "off", required = "required", @data_placeholder = "Enter Wt. of Saturated surface dry Aggregate in Air(B)" })
+                                @*<span id="spnErr_txtSamp4" class="field-validation-error"></span>*@
+                                @Html.TextBoxFor(x => x.Oven_Dry_Agg_Wt1, new { @class = "form-control numeric", @id = "txtSamp5", @autocomplete = "off", required = "required", @data_placeholder = "Enter Wt. Oven-dried Aggregate in Air" })
+                                @*<span id="spnErr_txtSamp6" class="field-validation-error"></span>*@
+                                @Html.TextBoxFor(x => x.SP_SG1, new { @class = "form-control numeric", @id = "txtSamp6", @autocomplete = "off", @ReadOnly = "True" })
+                                @Html.TextBoxFor(x => x.APP_SG1, new { @class = "form-control numeric", @id = "txtSamp7", @autocomplete = "off", @ReadOnly = "True" })
+                                @Html.TextBoxFor(x => x.WA_AB1, new { @class = "form-control numeric", @id = "txtSamp8", @autocomplete = "off", @ReadOnly = "True" })
+                            </td>
+                           
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-12 col-md-2 col-form-label">Tested By</label>
+            <div class="col-sm-12 col-md-4">
+                @Html.DropDownListFor(x => x.TESTED_BY, Model.EMPLOYEE_LIST, "Select Tested By", new { @class = "custom-select2 form-control", @id = "ddlTESTED_BY", @data_placeholder = "Select Tested By", @style = "width: 100%;" })
+                <span id="spnErr_ddlTESTED_BY" class="field-validation-error"></span> 
+                </div> 
+            <label class="col-sm-12 col-md-2 col-form-label">Checked By</label>
+            <div class="col-sm-12 col-md-4">
+                @Html.DropDownListFor(x => x.QC_INCHARGE, Model.EMPLOYEE_LIST, "Select Checked By", new { @class = "custom-select2 form-control", @id = "ddlQC_INCHARGE", @data_placeholder = "Select Checked By", @style = "width: 100%;" })
+                <span id="spnErr_ddlQC_INCHARGE" class="field-validation-error"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-12 col-md-2 col-form-label">Remarks</label>
+            <div class="col-sm-12 col-md-10">
+                @Html.TextAreaFor(x => x.REMARKS, new { @class = "form-control", @id = "txtRemarks", @autocomplete = "off", @maxLength = "250", @style = "height: 100px;", @data_placeholder = "Enter Remarks" })
+               <span id="spnErr_txtRemarks" class="field-validation-error"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+
+            <div class="col-md-12" style="padding-top:5px; padding-bottom:15px; padding-right:13px;text-align:center;">
+
+                <input type="submit" class="btn btn-success" value="Save" name="Save" style="width:auto;" id="btnSubmit" />
+                <input type="button" class="btn btn-warning" value="Back" name="Back" style="width: auto;" id="btnBack" />
+                @Html.HiddenFor(x => x.Test_ID)
+            </div>
+
+        </div>
+
+    </div>
+    <div class="modal fade bs-example-modal-lg" id="DocModal" tabindex="-1" role="dialog" aria-labelledby="DocModalLabel" aria-hidden="true" style="width:100%;padding:0px;">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">View Document</h4>
+                    <button type="button" class="close" aria-label="Close" id="btnDocPopupClose">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body" id="DocBody" style="padding-right: 0px; margin-right: 0px; max-height: 500px; overflow:hidden;padding:5px;">
+                    <div id="DOC1"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/assets/js/jquery-2.1.4.min.js"></script>
+<script src="~/Scripts/Custom/customValidation.js"></script>
+<script>
+
+    $(document).ready(function () {
+
+        $("#btnBack").on("click", function () {
+                var url = '@Url.Action("SpecificGravityList", "Specific")';
+                window.location.href = url;
+            });
+        $("#btnSubmit").click(function (e) {
+
+            flag = validateForm();
+
+            if (flag > 0) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        function validateForm() {
+
+            if ($("#txtDate").val() == "") {
+                $('#spnErr_txtDate').text('Select Date').show();
+            }
+            else {
+                $('#spnErr_txtDate').text('').hide();
+            }
+            if ($("#txtSource").val() == "") {
+                $('#spnErr_txtSource').text('Enter Source Name').show();
+            }
+            else {
+                $('#spnErr_txtSource').text('').hide();
+            }
+            if ($("#txtType").val() == "") {
+                $('#spnErr_txtType').text('Enter Type').show();
+            }
+            else {
+                $('#spnErr_txtType').text('').hide();
+            }
+
+            if ($("#txtColour").val() == "") {
+                $('#spnErr_txtColour').text('Enter Colour').show();
+            }
+            else {
+                $('#spnErr_txtColour').text('').hide();
+            }
+            if ($("#txtTexture").val() == "") {
+                $('#spnErr_txtTexture').text('Enter Texture').show();
+            }
+            else {
+                $('#spnErr_txtTexture').text('').hide();
+            }
+            if ($("#txtShape").val() == "") {
+                $('#spnErr_txtShape').text('Enter Shape').show();
+            }
+            else {
+                $('#spnErr_txtShape').text('').hide();
+            }
+            if ($("#txtRock_Type").val() == "") {
+                $('#spnErr_txtRock_Type').text('Enter Rock Type').show();
+            }
+            else {
+                $('#spnErr_txtRock_Type').text('').hide();
+            }
+            if ($("#ddlTESTED_BY option:selected").val() == "") {
+                $('#spnErr_ddlTESTED_BY').text('Select Tested By').show();
+            }
+            else {
+                $('#spnErr_ddlTESTED_BY').text('').hide();
+            }
+            if ($("#ddlQC_INCHARGE option:selected").val() == "") {
+                $('#spnErr_ddlQC_INCHARGE').text('Select Checked By').show();
+            }
+            else {
+                $('#spnErr_ddlQC_INCHARGE').text('').hide();
+            }
+
+            if ($("#txtRemarks").val() == "") {
+                $('#spnErr_txtRemarks').text('Enter Remarks').show();
+                return 1;
+            }
+            else {
+                $('#spnErr_txtRemarks').text('').hide();
+            }
+            return 0;
+
+
+        }
+
+        ///----------------FORMULA---------------------/////////
+   
+        // Formula FOR A1-A2
+        $('.numeric').on('input', function () {
+            var formula1 = parseFloat($('#txtSamp1').val()) || 0;
+            var formula2 = parseFloat($('#txtSamp2').val()) || 0;
+            var result = formula1 - formula2;
+            $('#txtSamp3').val(result);
+        });
+
+        //  Formula for C/(B-A)
+
+        $('.numeric').on('input', function () {
+            var formula1 = parseFloat($('#txtSamp4').val()) || 0;
+            var formula2 = parseFloat($('#txtSamp3').val()) || 0;
+            var formula3 = parseFloat($('#txtSamp5').val()) || 0;
+            var result = formula3 / (formula1 - formula2);
+            if (isNaN(result)) {
+                $('#txtSamp6').val("");
+            }
+            else {
+              
+                var resultWithTwoDecimalPlaces = parseFloat(result.toFixed(2));
+                $('#txtSamp6').val(resultWithTwoDecimalPlaces);
+
+            }
+
+        });
+
+        //  Formula for C/(C-A)
+      
+
+        $('.numeric').on('input', function () {
+            var formula1 = parseFloat($('#txtSamp5').val()) || 0;
+            var formula2 = parseFloat($('#txtSamp3').val()) || 0;
+            var result = formula1 / (formula1 - formula2);
+            if (isNaN(result)) {
+                $('#txtSamp7').val("");
+            }
+            else {
+                var resultWithTwoDecimalPlaces = parseFloat(result.toFixed(2));
+                $('#txtSamp7').val(resultWithTwoDecimalPlaces);
+            }
+        });
+
+
+        // Formula for (B-C)*100/C
+
+       
+
+        $('.numeric').on('input', function () {
+            var formula1 = parseFloat($('#txtSamp4').val()) || 0;
+            var formula2 = parseFloat($('#txtSamp5').val()) || 0;
+            var result = (formula1 - formula2) * 100 / formula2;
+            if (isNaN(result)) {
+                $('#txtSamp8').val("");
+            }
+            else {
+                var resultWithTwoDecimalPlaces = parseFloat(result.toFixed(2));
+                $('#txtSamp8').val(resultWithTwoDecimalPlaces);
+            }
+        });
+
+
+
+    });
+
+
+</script>
